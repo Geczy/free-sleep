@@ -45,37 +45,44 @@ warnings.simplefilter(action='ignore', category=UserWarning)
 # region CLEAN DF
 
 def clean_df_pred(df_pred: pd.DataFrame) -> pd.DataFrame:
-    breathing_lower_threshold = 10
-    breathing_upper_threshold = 23
-
-    # Replace values outside the threshold with NaN
-    df_pred['breathing_rate'] = df_pred['breathing_rate'].where(
-        (df_pred['breathing_rate'] >= breathing_lower_threshold) & (df_pred['breathing_rate'] <= breathing_upper_threshold), np.nan
-    )
-
-    # Fill NaN with the last valid value (forward fill)
-    # df_pred['breathing_rate'] = df_pred['breathing_rate'].ffill()
-    df_pred['breathing_rate'] = df_pred['breathing_rate'].interpolate(method='linear')
-
-    # Fill any remaining NaN with a rolling mean
-    window_size = 3
-    df_pred['breathing_rate'] = df_pred['breathing_rate'].rolling(window=window_size, min_periods=1).mean()
-
-    hrv_lower_threshold = 10
-    hrv_upper_threshold = 100
-
-    # Replace values outside the threshold with NaN
-    df_pred['hrv'] = df_pred['hrv'].where(
-        (df_pred['hrv'] >= hrv_lower_threshold) & (df_pred['hrv'] <= hrv_upper_threshold), np.nan
-    )
-
-    # Fill NaN with the last valid value (forward fill)
-    # df_pred['hrv'] = df_pred['hrv'].ffill()
-    df_pred['hrv'] = df_pred['hrv'].interpolate(method='linear')
-
-    # Fill any remaining NaN with a rolling mean
+    # Breathing Rate Cleaning
+    z_score_threshold = 2
     window_size = 30
-    df_pred['hrv'] = df_pred['hrv'].rolling(window=window_size, min_periods=10).mean()
+
+    # Calculate rolling z-score for breathing_rate
+    df_pred['breathing_rate_mean'] = df_pred['breathing_rate'].rolling(window=window_size, min_periods=1).mean()
+    df_pred['breathing_rate_std'] = df_pred['breathing_rate'].rolling(window=window_size, min_periods=1).std()
+    df_pred['breathing_rate_z_score'] = (df_pred['breathing_rate'] - df_pred['breathing_rate_mean']) / df_pred['breathing_rate_std']
+
+    # Identify and remove outliers
+    df_pred.loc[abs(df_pred['breathing_rate_z_score']) > z_score_threshold, 'breathing_rate'] = np.nan
+
+    # Interpolate missing values using polynomial interpolation
+    df_pred['breathing_rate'] = df_pred['breathing_rate'].interpolate(method='polynomial', order=2)
+    df_pred['breathing_rate'] = df_pred['breathing_rate'].ffill().bfill()
+
+    # Apply a final smoothing
+    df_pred['breathing_rate'] = df_pred['breathing_rate'].rolling(window=5, min_periods=1).mean()
+
+    # HRV Cleaning
+    # Calculate rolling z-score for hrv
+    df_pred['hrv_mean'] = df_pred['hrv'].rolling(window=window_size, min_periods=1).mean()
+    df_pred['hrv_std'] = df_pred['hrv'].rolling(window=window_size, min_periods=1).std()
+    df_pred['hrv_z_score'] = (df_pred['hrv'] - df_pred['hrv_mean']) / df_pred['hrv_std']
+
+    # Identify and remove outliers
+    df_pred.loc[abs(df_pred['hrv_z_score']) > z_score_threshold, 'hrv'] = np.nan
+
+    # Interpolate missing values using polynomial interpolation
+    df_pred['hrv'] = df_pred['hrv'].interpolate(method='polynomial', order=2)
+    df_pred['hrv'] = df_pred['hrv'].ffill().bfill()
+
+    # Apply a final smoothing
+    df_pred['hrv'] = df_pred['hrv'].rolling(window=5, min_periods=1).mean()
+
+    # Drop temporary columns
+    df_pred.drop(columns=['breathing_rate_mean', 'breathing_rate_std', 'breathing_rate_z_score', 'hrv_mean', 'hrv_std', 'hrv_z_score'], inplace=True)
+
     return df_pred
 
 
@@ -111,7 +118,7 @@ def _calculate(run_data: RunData, side: str):
     working_data, measurement = process(
         data,
         500,
-        breathing_method='fft',
+        breathing_method='welch',
         bpmmin=40,
         bpmmax=90,
         windowsize=run_data.window_size,
@@ -124,7 +131,7 @@ def _calculate(run_data: RunData, side: str):
             'end_time': run_data.end_interval.strftime('%Y-%m-%d %H:%M:%S'),
             'heart_rate': measurement['bpm'],
             'hrv': measurement['sdnn'],
-            'breathing_rate': measurement.get('breathingrate', 0) * 60,
+            'breathing_rate': measurement.get('breathingrate', 0),
         }
     return None
 
