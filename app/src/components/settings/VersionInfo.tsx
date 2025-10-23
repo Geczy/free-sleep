@@ -127,16 +127,9 @@ export default function VersionInfo() {
               overflow: 'auto',
             }}
           >
-            <p>Main branch:</p>
             <p>
               /bin/bash -c "$(curl -fsSL
               https://raw.githubusercontent.com/Geczy/free-sleep/main/scripts/install.sh)"
-            </p>
-
-            <p># Beta branch (not recommended):</p>
-            <p>
-              BRANCH=beta /bin/bash -c "$(curl -fsSL
-              https://raw.githubusercontent.com/Geczy/free-sleep/beta/scripts/install.sh)"
             </p>
           </Box>
         </Alert>
