@@ -27,7 +27,7 @@ fetch_github_commit_info() {
     return 1
   fi
 
-  local github_api_url="https://api.github.com/repos/throwaway31265/free-sleep/commits/${branch}"
+  local github_api_url="https://api.github.com/repos/Geczy/free-sleep/commits/${branch}"
   local commit_data=""
 
   if command -v timeout >/dev/null 2>&1; then
@@ -249,12 +249,12 @@ echo ""
 
 # Configure download URLs based on whether a specific commit is requested
 if [ -n "$COMMIT_SHA" ]; then
-  REPO_URL="https://github.com/throwaway31265/free-sleep/archive/${COMMIT_SHA}.zip"
+  REPO_URL="https://github.com/Geczy/free-sleep/archive/${COMMIT_SHA}.zip"
   ZIP_FILE="free-sleep-${COMMIT_SHA}.zip"
   EXTRACTED_DIR="free-sleep-${COMMIT_SHA}"
   echo "Installing specific commit: ${COMMIT_SHA} from branch ${BRANCH}"
 else
-  REPO_URL="https://github.com/throwaway31265/free-sleep/archive/refs/heads/${BRANCH}.zip"
+  REPO_URL="https://github.com/Geczy/free-sleep/archive/refs/heads/${BRANCH}.zip"
   ZIP_FILE="free-sleep-${BRANCH}.zip"
   EXTRACTED_DIR="free-sleep-${BRANCH}"
   echo "Installing latest from branch: ${BRANCH}"

@@ -20,7 +20,7 @@ export default function VersionInfo() {
       setRemoteCommit(null);
       try {
         const res = await fetch(
-          `https://api.github.com/repos/throwaway31265/free-sleep/commits/${version.branch}`,
+          `https://api.github.com/repos/Geczy/free-sleep/commits/${version.branch}`,
           { signal: controller.signal },
         );
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -100,7 +100,7 @@ export default function VersionInfo() {
           <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
             Your device is running commit{' '}
             <Link
-              href={`https://github.com/throwaway31265/free-sleep/commit/${version.commitHash}`}
+              href={`https://github.com/Geczy/free-sleep/commit/${version.commitHash}`}
               target="_blank"
               rel="noopener noreferrer"
               sx={{ fontWeight: 500 }}
@@ -110,7 +110,7 @@ export default function VersionInfo() {
             but the latest on
             <b> {version.branch}</b> is{' '}
             <Link
-              href={`https://github.com/throwaway31265/free-sleep/commit/${remoteCommit}`}
+              href={`https://github.com/Geczy/free-sleep/commit/${remoteCommit}`}
               target="_blank"
               rel="noopener noreferrer"
               sx={{ fontWeight: 500 }}
@@ -130,13 +130,13 @@ export default function VersionInfo() {
             <p>Main branch:</p>
             <p>
               /bin/bash -c "$(curl -fsSL
-              https://raw.githubusercontent.com/throwaway31265/free-sleep/main/scripts/install.sh)"
+              https://raw.githubusercontent.com/Geczy/free-sleep/main/scripts/install.sh)"
             </p>
 
             <p># Beta branch (not recommended):</p>
             <p>
               BRANCH=beta /bin/bash -c "$(curl -fsSL
-              https://raw.githubusercontent.com/throwaway31265/free-sleep/beta/scripts/install.sh)"
+              https://raw.githubusercontent.com/Geczy/free-sleep/beta/scripts/install.sh)"
             </p>
           </Box>
         </Alert>
@@ -189,8 +189,8 @@ export default function VersionInfo() {
                     // If remote commit is available and different, show diff
                     const url =
                       remoteCommit && remoteCommit !== version.commitHash
-                        ? `https://github.com/throwaway31265/free-sleep/compare/${version.commitHash}...${remoteCommit}`
-                        : `https://github.com/throwaway31265/free-sleep/commit/${version.commitHash}`;
+                        ? `https://github.com/Geczy/free-sleep/compare/${version.commitHash}...${remoteCommit}`
+                        : `https://github.com/Geczy/free-sleep/commit/${version.commitHash}`;
                     window.open(url, '_blank');
                   }
                 : undefined

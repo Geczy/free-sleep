@@ -194,10 +194,10 @@ nmcli connection reload
 
 ```
 # Main branch:
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/throwaway31265/free-sleep/main/scripts/install.sh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Geczy/free-sleep/main/scripts/install.sh)"
 
 # Beta branch (not recommended):
-BRANCH=beta /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/throwaway31265/free-sleep/beta/scripts/install.sh)"
+BRANCH=beta /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Geczy/free-sleep/beta/scripts/install.sh)"
 ```
 
 ---
